@@ -2,11 +2,11 @@
   "name": "mvc-express",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "nodemon app.js",
     "migrate": "node migrate.js",
-    "start": "node index.js",
+    "start": "node app.js",
     "lint": "echo '----- Checking Backend...' && npx prettier --debug-check . && eslint --ext .js . && echo '----- Done!'",
     "fix": "prettier --write . && eslint --fix --ext .js ."
   },

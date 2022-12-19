@@ -14,18 +14,18 @@ app.use(cors(corsOptions));
 const port = process.env.APP_PORT ?? 5000;
 
 const welcome = (req, res) => {
-  res.send("Welcome to users list");
+  res.send("Welcome to numbers list");
 };
 
 app.get("/", welcome);
 
-const userHandlers = require("./userHandlers");
+const numberHandlers = require("./numberHandlers");
 
-app.post("/register", userHandlers.postUser);
-app.get("/users", userHandlers.getUsers);
-app.get("/users/:id", userHandlers.getUserById);
-app.put("/users/:id", userHandlers.updateUser);
-app.delete("/users/:id", userHandlers.deleteUser);
+app.post("/numbers", numberHandlers.postNumber);
+app.get("/numbers", numberHandlers.getNumbers);
+app.get("/numbers/:id", numberHandlers.getNumberById);
+app.put("/numbers/:id", numberHandlers.updateNumber);
+app.delete("/numbers/:id", numberHandlers.deleteNumber);
 
 app.listen(port, (err) => {
   if (err) {

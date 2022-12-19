@@ -1,7 +1,7 @@
 const database = require("./database");
 
-const getUsers = (req, res) => {
-  const initialSql = "select id, firstname, lastname, email from users";
+const getNumbers = (req, res) => {
+  const initialSql = "select id, number, text from numbers order by number asc";
   const where = [];
 
   database
@@ -22,14 +22,14 @@ const getUsers = (req, res) => {
     });
 };
 
-const getUserById = (req, res) => {
+const getNumberById = (req, res) => {
   const id = parseInt(req.params.id, 10);
 
   database
-    .query("select firstname, lastname, email from users where id = ?", [id])
-    .then(([users]) => {
-      if (users[0] != null) {
-        res.json(users[0]);
+    .query("select id, number, text from numbers where id = ?", [id])
+    .then(([numbers]) => {
+      if (numbers[0] != null) {
+        res.json(numbers[0]);
       } else {
         res.status(404).send("Not Found");
       }
@@ -40,33 +40,48 @@ const getUserById = (req, res) => {
     });
 };
 
-const postUser = (req, res) => {
-  const { firstname, lastname, email } = req.body;
+const postNumber = (req, res) => {
+  const { number, text } = req.body;
 
   database
-    .query("INSERT INTO users(firstname, lastname, email) VALUES (?, ?, ?)", [
-      firstname,
-      lastname,
-      email,
+    .query("INSERT INTO numbers(number, text) VALUES (?, ?)", [number, text])
+    .then(([result]) => {
+      res.location(`/numbers/${result.insertId}`).sendStatus(201);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error saving the number");
+    });
+};
+
+const updateNumber = (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { number, text } = req.body;
+
+  database
+    .query("update numbers set number = ?, text = ? where id = ?", [
+      number,
+      text,
+      id,
     ])
     .then(([result]) => {
-      res.location(`/users/${result.insertId}`).sendStatus(201);
+      if (result.affectedRows === 0) {
+        res.status(404).send("Not Found");
+      } else {
+        res.sendStatus(204);
+      }
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error saving the user");
+      res.status(500).send("Error editing the number");
     });
 };
 
-const updateUser = (req, res) => {
+const deleteNumber = (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const { firstname, lastname, email } = req.body;
 
   database
-    .query(
-      "update users set firstname = ?, lastname = ?, email = ? where id = ?",
-      [firstname, lastname, email, id]
-    )
+    .query("delete from numbers where id = ?", [id])
     .then(([result]) => {
       if (result.affectedRows === 0) {
         res.status(404).send("Not Found");
@@ -76,32 +91,14 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(500).send("Error editing the user");
-    });
-};
-
-const deleteUser = (req, res) => {
-  const id = parseInt(req.params.id, 10);
-
-  database
-    .query("delete from users where id = ?", [id])
-    .then(([result]) => {
-      if (result.affectedRows === 0) {
-        res.status(404).send("Not Found");
-      } else {
-        res.sendStatus(204);
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error deleting the user");
+      res.status(500).send("Error deleting the number");
     });
 };
 
 module.exports = {
-  getUsers,
-  getUserById,
-  postUser,
-  updateUser,
-  deleteUser,
+  getNumbers,
+  getNumberById,
+  postNumber,
+  updateNumber,
+  deleteNumber,
 };
